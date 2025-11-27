@@ -1,6 +1,6 @@
 /**
  * Mailable Admin Settings JavaScript
- * Handles dynamic driver switching
+ * Handles dynamic driver switching and UI interactions
  */
 (function($) {
     'use strict';
@@ -59,7 +59,44 @@
         if (initialDriver) {
             switchDriver(initialDriver);
         }
+
+        // Toggle Switch Functionality
+        $('.mailable-toggle-switch').on('click', function() {
+            const $toggle = $(this);
+            const $checkbox = $('#' + $toggle.data('toggle-target'));
+            const $label = $toggle.siblings().find('.mailable-toggle-label');
+            
+            const isActive = $toggle.hasClass('active');
+            
+            if (isActive) {
+                $toggle.removeClass('active');
+                $label.removeClass('active');
+                $checkbox.prop('checked', false);
+            } else {
+                $toggle.addClass('active');
+                $label.addClass('active');
+                $checkbox.prop('checked', true);
+            }
+        });
+
+        // Update form inputs to use new CSS classes
+        $('.form-table input[type="text"], .form-table input[type="email"], .form-table input[type="password"]').each(function() {
+            if (!$(this).hasClass('mailable-form-input')) {
+                $(this).addClass('mailable-form-input');
+            }
+        });
+
+        $('.form-table select').each(function() {
+            if (!$(this).hasClass('mailable-form-select')) {
+                $(this).addClass('mailable-form-select');
+            }
+        });
+
+        $('.form-table textarea').each(function() {
+            if (!$(this).hasClass('mailable-form-textarea')) {
+                $(this).addClass('mailable-form-textarea');
+            }
+        });
     });
 
 })(jQuery);
-

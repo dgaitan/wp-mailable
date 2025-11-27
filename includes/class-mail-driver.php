@@ -132,12 +132,10 @@ abstract class Mail_Driver
                     name="<?php echo esc_attr($name); ?>"
                     id="<?php echo esc_attr($id); ?>"
                     value="<?php echo esc_attr($value); ?>"
-                    class="regular-text"
+                    class="mailable-form-input"
                     <?php echo isset($field['required']) && $field['required'] ? 'required' : ''; ?> />
                 <?php
-                if (! empty($field['description'])) {
-                    echo '<p class="description">' . wp_kses_post($field['description']) . '</p>';
-                }
+                // Description is now handled in the template
                 break;
 
             case 'textarea':
@@ -145,30 +143,34 @@ abstract class Mail_Driver
                 <textarea
                     name="<?php echo esc_attr($name); ?>"
                     id="<?php echo esc_attr($id); ?>"
-                    class="large-text"
+                    class="mailable-form-textarea"
                     rows="<?php echo esc_attr($field['rows'] ?? 5); ?>"
                     <?php echo isset($field['required']) && $field['required'] ? 'required' : ''; ?>><?php echo esc_textarea($value); ?></textarea>
                 <?php
-                if (! empty($field['description'])) {
-                    echo '<p class="description">' . wp_kses_post($field['description']) . '</p>';
-                }
+                // Description is now handled in the template
                 break;
 
             case 'checkbox':
                 ?>
-                <label>
-                    <input
-                        type="checkbox"
-                        name="<?php echo esc_attr($name); ?>"
-                        id="<?php echo esc_attr($id); ?>"
-                        value="1"
-                        <?php checked(1, $value); ?> />
-                    <?php echo isset($field['checkbox_label']) ? esc_html($field['checkbox_label']) : (isset($field['label']) ? esc_html($field['label']) : ''); ?>
-                </label>
+                <div class="mailable-toggle">
+                    <div class="mailable-toggle-switch <?php echo $value ? 'active' : ''; ?>" data-toggle-target="<?php echo esc_attr($id); ?>"></div>
+                    <div>
+                        <label for="<?php echo esc_attr($id); ?>" class="mailable-toggle-label <?php echo $value ? 'active' : ''; ?>">
+                            <?php echo isset($field['checkbox_label']) ? esc_html($field['checkbox_label']) : (isset($field['label']) ? esc_html($field['label']) : ''); ?>
+                        </label>
+                        <input
+                            type="checkbox"
+                            name="<?php echo esc_attr($name); ?>"
+                            id="<?php echo esc_attr($id); ?>"
+                            value="1"
+                            <?php checked(1, $value); ?>
+                            style="display: none;" />
+                        <?php if (! empty($field['description'])) : ?>
+                            <p class="mailable-toggle-description"><?php echo wp_kses_post($field['description']); ?></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
 <?php
-                if (! empty($field['description'])) {
-                    echo '<p class="description">' . wp_kses_post($field['description']) . '</p>';
-                }
                 break;
         }
     }

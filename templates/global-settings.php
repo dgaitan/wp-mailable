@@ -15,45 +15,54 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<h2>Global Settings</h2>
-<table class="form-table">
-    <tr valign="top">
-        <th scope="row">From Email</th>
-        <td>
-            <input
-                type="email"
-                name="<?php echo esc_attr( $option_from_email ); ?>"
-                value="<?php echo esc_attr( get_option( $option_from_email ) ); ?>"
-                class="regular-text" />
-            <p class="description">Global "From" email address (optional). Can be overridden by driver settings.</p>
-        </td>
-    </tr>
+<div class="mailable-card">
+    <div class="mailable-card-header">
+        <h3 class="mailable-card-title">
+            <svg class="mailable-card-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Global Settings
+        </h3>
+    </div>
+    
+    <div class="mailable-form-group">
+        <label for="<?php echo esc_attr( $option_from_email ); ?>" class="mailable-form-label">From Email</label>
+        <input
+            type="email"
+            name="<?php echo esc_attr( $option_from_email ); ?>"
+            id="<?php echo esc_attr( $option_from_email ); ?>"
+            value="<?php echo esc_attr( get_option( $option_from_email ) ); ?>"
+            class="mailable-form-input" />
+        <p class="mailable-form-description">Global "From" email address (optional). Can be overridden by driver settings.</p>
+    </div>
 
-    <tr valign="top">
-        <th scope="row">From Name</th>
-        <td>
-            <input
-                type="text"
-                name="<?php echo esc_attr( $option_from_name ); ?>"
-                value="<?php echo esc_attr( get_option( $option_from_name ) ); ?>"
-                class="regular-text" />
-            <p class="description">Global "From" name (optional). Can be overridden by driver settings.</p>
-        </td>
-    </tr>
+    <div class="mailable-form-group">
+        <label for="<?php echo esc_attr( $option_from_name ); ?>" class="mailable-form-label">From Name</label>
+        <input
+            type="text"
+            name="<?php echo esc_attr( $option_from_name ); ?>"
+            id="<?php echo esc_attr( $option_from_name ); ?>"
+            value="<?php echo esc_attr( get_option( $option_from_name ) ); ?>"
+            class="mailable-form-input" />
+        <p class="mailable-form-description">Global "From" name (optional). Can be overridden by driver settings.</p>
+    </div>
 
-    <tr valign="top">
-        <th scope="row">Force "From" Settings</th>
-        <td>
-            <label>
+    <div class="mailable-form-group">
+        <div class="mailable-toggle">
+            <div class="mailable-toggle-switch <?php echo get_option( $option_force_from ) ? 'active' : ''; ?>" data-toggle-target="<?php echo esc_attr( $option_force_from ); ?>"></div>
+            <div>
+                <label for="<?php echo esc_attr( $option_force_from ); ?>" class="mailable-toggle-label <?php echo get_option( $option_force_from ) ? 'active' : ''; ?>">
+                    Force "From" Settings
+                </label>
                 <input
                     type="checkbox"
                     name="<?php echo esc_attr( $option_force_from ); ?>"
+                    id="<?php echo esc_attr( $option_force_from ); ?>"
                     value="1"
-                    <?php checked( 1, get_option( $option_force_from ) ); ?> />
-                Force all emails to use the "From" values above.
-            </label>
-            <p class="description">Recommended. Prevents other plugins from setting their own "From" headers.</p>
-        </td>
-    </tr>
-</table>
-
+                    <?php checked( 1, get_option( $option_force_from ) ); ?>
+                    style="display: none;" />
+                <p class="mailable-toggle-description">Recommended. Prevents other plugins from setting their own "From" headers.</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,597 @@
+/**
+ * Mailable Admin Settings Styles
+ * Modern UI inspired by WordPress.com
+ *
+ * @package Mailable
+ */
+
+/* ============================================
+   Variables - WordPress.com Color Scheme
+   ============================================ */
+:root {
+    --mailable-primary: #0073aa;
+    --mailable-primary-dark: #005177;
+    --mailable-primary-light: #00a0d2;
+    --mailable-success: #46b450;
+    --mailable-success-light: #e8f5e9;
+    --mailable-accent: #826eb4;
+    --mailable-accent-dark: #6b5a8f;
+    --mailable-text: #23282d;
+    --mailable-text-light: #646970;
+    --mailable-text-muted: #b4b9be;
+    --mailable-border: #dcdcde;
+    --mailable-border-light: #f0f0f1;
+    --mailable-bg: #ffffff;
+    --mailable-bg-light: #f6f7f7;
+    --mailable-bg-hover: #f0f0f1;
+    --mailable-shadow: rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+.mailable-admin-wrap {
+    display: flex;
+    min-height: calc(100vh - 32px);
+    background: var(--mailable-bg-light);
+    margin: 0 -20px 0 -20px;
+    padding: 0;
+}
+
+/* ============================================
+   Sidebar Navigation
+   ============================================ */
+.mailable-sidebar {
+    width: 240px;
+    background: var(--mailable-bg);
+    border-right: 1px solid var(--mailable-border);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.mailable-sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--mailable-border);
+}
+
+.mailable-logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--mailable-primary);
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.mailable-tagline {
+    font-size: 12px;
+    color: var(--mailable-text-light);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.mailable-nav {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0;
+}
+
+.mailable-nav-item {
+    margin: 0;
+    padding: 0;
+}
+
+.mailable-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--mailable-text-light);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    position: relative;
+}
+
+.mailable-nav-link:hover {
+    background: var(--mailable-bg-hover);
+    color: var(--mailable-text);
+}
+
+.mailable-nav-link.active {
+    color: var(--mailable-primary);
+    background: #f0f6f8;
+    border-left-color: var(--mailable-primary);
+    font-weight: 600;
+}
+
+.mailable-nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--mailable-primary);
+    border-radius: 0 2px 2px 0;
+}
+
+.mailable-nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.mailable-nav-text {
+    flex: 1;
+}
+
+.mailable-nav-desc {
+    display: block;
+    font-size: 11px;
+    color: var(--mailable-text-light);
+    margin-top: 2px;
+}
+
+.mailable-nav-link.active .mailable-nav-desc {
+    color: var(--mailable-text-light);
+}
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+.mailable-content {
+    flex: 1;
+    padding: 32px 40px;
+    max-width: calc(100% - 240px);
+}
+
+.mailable-content-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.mailable-content-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    color: var(--mailable-text-light);
+}
+
+.mailable-content-title {
+    font-size: 23px;
+    font-weight: 600;
+    color: var(--mailable-text);
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+.mailable-card {
+    background: var(--mailable-bg);
+    border: 1px solid var(--mailable-border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 1px var(--mailable-shadow);
+}
+
+.mailable-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--mailable-border);
+}
+
+.mailable-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mailable-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.mailable-card-title-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* ============================================
+   Success Banner
+   ============================================ */
+.mailable-banner {
+    background: linear-gradient(135deg, var(--mailable-success-light) 0%, #f0f9f4 100%);
+    border-left: 4px solid var(--mailable-success);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mailable-banner::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(70, 180, 80, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.mailable-banner-content {
+    position: relative;
+    z-index: 1;
+}
+
+.mailable-banner-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--mailable-success);
+    margin: 0 0 8px 0;
+}
+
+.mailable-banner-text {
+    font-size: 14px;
+    color: var(--mailable-text);
+    margin: 0 0 12px 0;
+    line-height: 1.6;
+}
+
+.mailable-banner-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--mailable-text-light);
+    font-size: 20px;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.mailable-banner-close:hover {
+    color: var(--mailable-text);
+}
+
+/* ============================================
+   Form Fields
+   ============================================ */
+.mailable-form-group {
+    margin-bottom: 20px;
+}
+
+.mailable-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.mailable-form-label {
+    display: block;
+    font-weight: 500;
+    color: var(--mailable-text);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.mailable-form-label.required::after {
+    content: ' *';
+    color: #dc2626;
+}
+
+.mailable-form-input,
+.mailable-form-select,
+.mailable-form-textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px 12px;
+    border: 1px solid var(--mailable-border);
+    border-radius: 3px;
+    font-size: 14px;
+    color: var(--mailable-text);
+    background: var(--mailable-bg);
+    transition: all 0.15s ease;
+    line-height: 1.5;
+}
+
+.mailable-form-input:focus,
+.mailable-form-select:focus,
+.mailable-form-textarea:focus {
+    outline: none;
+    border-color: var(--mailable-primary);
+    box-shadow: 0 0 0 1px var(--mailable-primary);
+}
+
+.mailable-form-description {
+    font-size: 13px;
+    color: var(--mailable-text-light);
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Toggle Switch
+   ============================================ */
+.mailable-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mailable-toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--mailable-text-muted);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.mailable-toggle-switch.active {
+    background: var(--mailable-primary);
+}
+
+.mailable-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.mailable-toggle-switch.active::after {
+    transform: translateX(20px);
+}
+
+.mailable-toggle-label {
+    font-size: 14px;
+    color: var(--mailable-text);
+    font-weight: 500;
+}
+
+.mailable-toggle-label.active {
+    color: var(--mailable-success);
+}
+
+.mailable-toggle-description {
+    font-size: 13px;
+    color: var(--mailable-text-light);
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.mailable-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    line-height: 1.5;
+    box-shadow: 0 1px 1px var(--mailable-shadow);
+}
+
+.mailable-button-primary {
+    background: var(--mailable-primary);
+    color: white;
+}
+
+.mailable-button-primary:hover {
+    background: var(--mailable-primary-dark);
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-button-primary:active {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-button-secondary {
+    background: var(--mailable-bg);
+    color: var(--mailable-primary);
+    border: 1px solid var(--mailable-primary);
+}
+
+.mailable-button-secondary:hover {
+    background: #f0f6f8;
+    color: var(--mailable-primary-dark);
+    border-color: var(--mailable-primary-dark);
+}
+
+.mailable-button-success {
+    background: var(--mailable-success);
+    color: white;
+}
+
+.mailable-button-success:hover {
+    background: #3a9e47;
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-button-success:active {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-button-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   Status Section
+   ============================================ */
+.mailable-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.mailable-status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--mailable-bg-light);
+    border: 1px solid var(--mailable-border);
+    border-radius: 3px;
+}
+
+.mailable-status-label {
+    font-size: 14px;
+    color: var(--mailable-text);
+    font-weight: 500;
+}
+
+.mailable-status-value {
+    font-size: 14px;
+    color: var(--mailable-success);
+    font-weight: 600;
+}
+
+/* ============================================
+   Quick Actions
+   ============================================ */
+.mailable-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.mailable-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--mailable-primary);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    box-shadow: 0 1px 1px var(--mailable-shadow);
+}
+
+.mailable-action-button:hover {
+    background: var(--mailable-primary-dark);
+    color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-action-button:active {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.mailable-action-button-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* ============================================
+   Info Box
+   ============================================ */
+.mailable-info-box {
+    background: #f0f6f8;
+    border-left: 4px solid var(--mailable-primary);
+    padding: 16px;
+    margin: 20px 0;
+    border-radius: 3px;
+}
+
+.mailable-info-box p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--mailable-text);
+    line-height: 1.6;
+}
+
+.mailable-info-box p:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+.mailable-info-box strong {
+    color: var(--mailable-primary);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 782px) {
+    .mailable-admin-wrap {
+        flex-direction: column;
+    }
+
+    .mailable-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--mailable-border);
+    }
+
+    .mailable-content {
+        max-width: 100%;
+        padding: 24px 20px;
+    }
+
+    .mailable-status-grid,
+    .mailable-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   WordPress Overrides
+   ============================================ */
+.mailable-admin-wrap .form-table {
+    margin: 0;
+}
+
+.mailable-admin-wrap .form-table th {
+    padding: 0 0 8px 0;
+    font-weight: 500;
+}
+
+.mailable-admin-wrap .form-table td {
+    padding: 0 0 20px 0;
+}
+
+.mailable-admin-wrap .description {
+    font-size: 13px;
+    color: var(--mailable-text-light);
+    margin-top: 6px;
+}
+
+/* Hide default WordPress notices in our custom layout */
+.mailable-admin-wrap ~ .notice {
+    margin: 20px 20px 0 20px;
+}
+

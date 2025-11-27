@@ -79,6 +79,13 @@ class Mailable
             return;
         }
 
+        wp_enqueue_style(
+            'mailable-admin-settings',
+            MAILABLE_PLUGIN_URL . 'css/admin-settings.css',
+            array(),
+            MAILABLE_VERSION
+        );
+
         wp_enqueue_script(
             'mailable-admin-settings',
             MAILABLE_PLUGIN_URL . 'js/admin-settings.js',
