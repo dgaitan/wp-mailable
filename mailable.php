@@ -14,13 +14,6 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-if (class_exists('Mailable')) {
-    add_action('admin_notices', function () {
-        echo '<div class="notice notice-error"><p>Mailable plugin is already active.</p></div>';
-    });
-    return;
-}
-
 // Define plugin constants
 define('MAILABLE_VERSION', '2.0.0');
 define('MAILABLE_PLUGIN_DIR', plugin_dir_path(__FILE__));
@@ -32,6 +25,7 @@ require_once MAILABLE_PLUGIN_DIR . 'includes/class-driver-manager.php';
 
 // Load drivers
 require_once MAILABLE_PLUGIN_DIR . 'includes/drivers/class-sendgrid-driver.php';
+require_once MAILABLE_PLUGIN_DIR . 'includes/drivers/class-mailpit-driver.php';
 
 /**
  * Main Mailable Plugin Class
@@ -77,6 +71,7 @@ class Mailable
     private function register_drivers()
     {
         Mail_Driver_Manager::register('sendgrid', 'SendGrid_Driver');
+        Mail_Driver_Manager::register('mailpit', 'Mailpit_Driver');
 
         // Allow other plugins to register drivers
         do_action('mailable_register_drivers');
@@ -237,133 +232,19 @@ class Mailable
             return;
         }
 
+        // Prepare template variables
         $active_driver_name = get_option($this->option_active_driver, 'sendgrid');
         $active_driver      = Mail_Driver_Manager::get_driver($active_driver_name);
         $available_drivers  = Mail_Driver_Manager::get_driver_options();
-?>
-        <div class="wrap">
-            <h1>Mailable Settings</h1>
-            <p>Configure your email service provider to send emails through WordPress.</p>
 
-            <form action="options.php" method="post">
-                <?php
-                settings_fields('mailable_settings_group');
-                ?>
+        // Pass option keys to template
+        $option_active_driver = $this->option_active_driver;
+        $option_from_email    = $this->option_from_email;
+        $option_from_name     = $this->option_from_name;
+        $option_force_from    = $this->option_force_from;
 
-                <h2>Mail Service Provider</h2>
-                <table class="form-table">
-                    <tr valign="top">
-                        <th scope="row">
-                            <label for="mailable_active_driver">Select Provider</label>
-                        </th>
-                        <td>
-                            <select name="<?php echo esc_attr($this->option_active_driver); ?>" id="mailable_active_driver">
-                                <?php foreach ($available_drivers as $name => $label) : ?>
-                                    <option value="<?php echo esc_attr($name); ?>" <?php selected($active_driver_name, $name); ?>>
-                                        <?php echo esc_html($label); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <p class="description">Choose your email service provider.</p>
-                        </td>
-                    </tr>
-                </table>
-
-                <?php if ($active_driver) : ?>
-                    <h2><?php echo esc_html($active_driver->get_label()); ?> Configuration</h2>
-                    <table class="form-table">
-                        <?php
-                        $fields = $active_driver->get_settings_fields();
-                        foreach ($fields as $field) :
-                        ?>
-                            <tr valign="top">
-                                <th scope="row">
-                                    <label for="mailable_<?php echo esc_attr($active_driver_name); ?>_<?php echo esc_attr($field['key']); ?>">
-                                        <?php echo esc_html($field['label']); ?>
-                                    </label>
-                                </th>
-                                <td>
-                                    <?php $active_driver->render_settings_field($field); ?>
-                                </td>
-                            </tr>
-                        <?php
-                        endforeach;
-                        ?>
-                    </table>
-                <?php endif; ?>
-
-                <h2>Global Settings</h2>
-                <table class="form-table">
-                    <tr valign="top">
-                        <th scope="row">From Email</th>
-                        <td>
-                            <input
-                                type="email"
-                                name="<?php echo esc_attr($this->option_from_email); ?>"
-                                value="<?php echo esc_attr(get_option($this->option_from_email)); ?>"
-                                class="regular-text" />
-                            <p class="description">Global "From" email address (optional). Can be overridden by driver settings.</p>
-                        </td>
-                    </tr>
-
-                    <tr valign="top">
-                        <th scope="row">From Name</th>
-                        <td>
-                            <input
-                                type="text"
-                                name="<?php echo esc_attr($this->option_from_name); ?>"
-                                value="<?php echo esc_attr(get_option($this->option_from_name)); ?>"
-                                class="regular-text" />
-                            <p class="description">Global "From" name (optional). Can be overridden by driver settings.</p>
-                        </td>
-                    </tr>
-
-                    <tr valign="top">
-                        <th scope="row">Force "From" Settings</th>
-                        <td>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="<?php echo esc_attr($this->option_force_from); ?>"
-                                    value="1"
-                                    <?php checked(1, get_option($this->option_force_from)); ?> />
-                                Force all emails to use the "From" values above.
-                            </label>
-                            <p class="description">Recommended. Prevents other plugins from setting their own "From" headers.</p>
-                        </td>
-                    </tr>
-                </table>
-
-                <?php submit_button(); ?>
-            </form>
-
-            <hr>
-
-            <h2>Send a Test Email</h2>
-            <p>Save your settings above first, then use this form to verify everything is working.</p>
-            <form method="post" action="">
-                <?php wp_nonce_field('mailable_send_test_email', 'mailable_test_nonce'); ?>
-                <table class="form-table">
-                    <tr valign="top">
-                        <th scope="row">Send To</th>
-                        <td>
-                            <input
-                                type="email"
-                                name="mailable_test_email_recipient"
-                                class="regular-text"
-                                placeholder="you@example.com"
-                                required />
-                            <input
-                                type="submit"
-                                name="mailable_send_test"
-                                class="button button-secondary"
-                                value="Send Test Email" />
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-<?php
+        // Load settings page template
+        require MAILABLE_PLUGIN_DIR . 'templates/settings-page.php';
     }
 
     /**
