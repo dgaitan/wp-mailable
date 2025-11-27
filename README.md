@@ -16,6 +16,14 @@ A WordPress plugin that allows you to send emails using multiple mail service pr
 - Verified sender support
 - Force "From" header option
 
+### Mailpit (Development)
+- Local development email testing tool
+- No authentication required
+- Configurable host and port (default: localhost:1025)
+- Web UI typically on port 8025
+- Perfect for local development environments
+- See [Mailpit Documentation](https://mailpit.axllent.org/docs/)
+
 ## Adding a New Driver
 
 To add a new mail service provider, create a new driver class:
