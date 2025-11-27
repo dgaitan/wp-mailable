@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailpit Mail Driver
  *
@@ -9,16 +10,18 @@
  */
 
 // Prevent direct access
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
     exit;
 }
 
-class Mailpit_Driver extends Mail_Driver {
+class Mailpit_Driver extends Mail_Driver
+{
 
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->driver_name  = 'mailpit';
         $this->driver_label = 'Mailpit (Development)';
     }
@@ -29,9 +32,10 @@ class Mailpit_Driver extends Mail_Driver {
      * @param PHPMailer $phpmailer
      * @return void
      */
-    public function configure_phpmailer( $phpmailer ) {
-        $host = $this->get_option( 'host', 'localhost' );
-        $port = absint( $this->get_option( 'port', 1025 ) );
+    public function configure_phpmailer($phpmailer)
+    {
+        $host = $this->get_option('host', 'localhost');
+        $port = absint($this->get_option('port', 1025));
 
         $phpmailer->isSMTP();
         $phpmailer->Host       = $host;
@@ -40,20 +44,20 @@ class Mailpit_Driver extends Mail_Driver {
         $phpmailer->SMTPSecure = ''; // No encryption by default (or use 'tls' if configured)
 
         // Optional: Use STARTTLS if enabled
-        if ( $this->get_option( 'use_tls', false ) ) {
+        if ($this->get_option('use_tls', false)) {
             $phpmailer->SMTPSecure = 'tls';
         }
 
         // Force "From" header if enabled
-        if ( $this->get_option( 'force_from', false ) ) {
-            $from_email = $this->get_option( 'from_email' );
-            $from_name  = $this->get_option( 'from_name' );
+        if ($this->get_option('force_from', false)) {
+            $from_email = $this->get_option('from_email');
+            $from_name  = $this->get_option('from_name');
 
-            if ( ! empty( $from_email ) && is_email( $from_email ) ) {
+            if (! empty($from_email) && is_email($from_email)) {
                 $phpmailer->From = $from_email;
             }
 
-            if ( ! empty( $from_name ) ) {
+            if (! empty($from_name)) {
                 $phpmailer->FromName = $from_name;
             }
         }
@@ -64,7 +68,8 @@ class Mailpit_Driver extends Mail_Driver {
      *
      * @return array
      */
-    public function get_settings_fields() {
+    public function get_settings_fields()
+    {
         return array(
             array(
                 'key'         => 'host',
@@ -114,19 +119,66 @@ class Mailpit_Driver extends Mail_Driver {
      *
      * @return bool|WP_Error
      */
-    public function validate_config() {
-        $host = $this->get_option( 'host', 'localhost' );
-        $port = absint( $this->get_option( 'port', 1025 ) );
+    public function validate_config()
+    {
+        $host = $this->get_option('host', 'localhost');
+        $port = absint($this->get_option('port', 1025));
 
-        if ( empty( $host ) ) {
-            return new WP_Error( 'missing_host', 'SMTP Host is required.' );
+        if (empty($host)) {
+            return new WP_Error('missing_host', 'SMTP Host is required.');
         }
 
-        if ( $port < 1 || $port > 65535 ) {
-            return new WP_Error( 'invalid_port', 'SMTP Port must be between 1 and 65535.' );
+        if ($port < 1 || $port > 65535) {
+            return new WP_Error('invalid_port', 'SMTP Port must be between 1 and 65535.');
         }
 
         return true;
     }
-}
 
+    /**
+     * Test connection to Mailpit
+     *
+     * @return array
+     */
+    public function test_connection()
+    {
+        $validation = $this->validate_config();
+
+        if (is_wp_error($validation)) {
+            return array(
+                'success' => false,
+                'message' => $validation->get_error_message(),
+            );
+        }
+
+        $host = $this->get_option('host', 'localhost');
+        $port = absint($this->get_option('port', 1025));
+
+        // Try to connect to the SMTP server
+        $connection = @fsockopen($host, $port, $errno, $errstr, 5);
+
+        if (!$connection) {
+            return array(
+                'success' => false,
+                'message' => sprintf(
+                    'Cannot connect to Mailpit at %s:%d. Error: %s (%d). Make sure Mailpit is running.',
+                    $host,
+                    $port,
+                    $errstr ?: 'Connection timeout',
+                    $errno ?: 0
+                ),
+            );
+        }
+
+        fclose($connection);
+
+        return array(
+            'success' => true,
+            'message' => sprintf(
+                'Successfully connected to Mailpit at %s:%d. SMTP server is reachable.',
+                $host,
+                $port
+            ),
+        );
+    }
+}

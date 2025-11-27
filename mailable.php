@@ -61,6 +61,31 @@ class Mailable
         // Hook for modifying the "From" address/name
         add_filter('wp_mail_from', array($this, 'set_from_email'));
         add_filter('wp_mail_from_name', array($this, 'set_from_name'));
+
+        // Enqueue admin scripts
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+    }
+
+    /**
+     * Enqueue admin scripts and styles
+     *
+     * @param string $hook Current admin page hook
+     * @return void
+     */
+    public function enqueue_admin_scripts($hook)
+    {
+        // Only load on our settings page
+        if ($hook !== 'settings_page_mailable-settings') {
+            return;
+        }
+
+        wp_enqueue_script(
+            'mailable-admin-settings',
+            MAILABLE_PLUGIN_URL . 'js/admin-settings.js',
+            array('jquery'),
+            MAILABLE_VERSION,
+            true
+        );
     }
 
     /**
@@ -106,7 +131,7 @@ class Mailable
         register_setting('mailable_settings_group', $this->option_from_name, 'sanitize_text_field');
         register_setting('mailable_settings_group', $this->option_force_from);
 
-        // Register settings for each driver
+        // Register settings for each driver (no validation - we'll validate on save)
         $drivers = Mail_Driver_Manager::get_drivers();
         foreach ($drivers as $name => $class) {
             $driver = new $class();
@@ -116,6 +141,49 @@ class Mailable
                 $option_key = 'mailable_' . $name . '_' . $field['key'];
                 $sanitize   = $this->get_sanitize_callback($field['type']);
                 register_setting('mailable_settings_group', $option_key, $sanitize);
+            }
+        }
+
+        // Add validation on settings save
+        add_action('admin_init', array($this, 'validate_active_driver_settings'), 20);
+    }
+
+    /**
+     * Validate active driver settings
+     *
+     * @return void
+     */
+    public function validate_active_driver_settings()
+    {
+        // Only validate on our settings page
+        if (!isset($_POST['option_page']) || $_POST['option_page'] !== 'mailable_settings_group') {
+            return;
+        }
+
+        $active_driver_name = isset($_POST['mailable_active_driver'])
+            ? sanitize_text_field($_POST['mailable_active_driver'])
+            : get_option('mailable_active_driver', 'sendgrid');
+
+        $driver = Mail_Driver_Manager::get_driver($active_driver_name);
+
+        if (!$driver) {
+            return;
+        }
+
+        // Check required fields from POST values
+        $fields = $driver->get_settings_fields();
+        foreach ($fields as $field) {
+            if (isset($field['required']) && $field['required']) {
+                $option_key = 'mailable_' . $active_driver_name . '_' . $field['key'];
+                $value = isset($_POST[$option_key]) ? trim($_POST[$option_key]) : '';
+
+                if (empty($value)) {
+                    add_settings_error(
+                        $option_key,
+                        'required_field',
+                        sprintf('%s is required for %s.', $field['label'], $driver->get_label())
+                    );
+                }
             }
         }
     }
@@ -248,17 +316,28 @@ class Mailable
     }
 
     /**
-     * Handle test email
+     * Handle test email and connection test
      *
      * @return void
      */
     private function handle_test_email()
     {
-        if (! isset($_POST['mailable_send_test']) || ! isset($_POST['mailable_test_nonce'])) {
+        // Handle connection test
+        if (isset($_POST['mailable_test_connection'])) {
+            $nonce_key = isset($_POST['mailable_test_connection_nonce']) ? 'mailable_test_connection_nonce' : 'mailable_test_nonce';
+            if (isset($_POST[$nonce_key]) && wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
+                $this->handle_connection_test();
+            }
             return;
         }
 
-        if (! wp_verify_nonce($_POST['mailable_test_nonce'], 'mailable_send_test_email')) {
+        // Handle test email
+        if (! isset($_POST['mailable_send_test'])) {
+            return;
+        }
+
+        $nonce_key = isset($_POST['mailable_test_email_nonce']) ? 'mailable_test_email_nonce' : 'mailable_test_nonce';
+        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
             return;
         }
 
@@ -267,31 +346,139 @@ class Mailable
         }
 
         $driver = Mail_Driver_Manager::get_active_driver();
-        $driver_name = $driver ? $driver->get_label() : 'Unknown';
+
+        if (! $driver) {
+            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> No active driver configured.</p></div>';
+            return;
+        }
+
+        $driver_name = $driver->get_label();
+
+        // Test connection first
+        $connection_test = $driver->test_connection();
+        if (! $connection_test['success']) {
+            echo '<div class="notice notice-warning is-dismissible"><p><strong>Configuration Issue:</strong> ' . esc_html($connection_test['message']) . '</p><p>Please check your settings before sending a test email.</p></div>';
+            return;
+        }
 
         $to      = sanitize_email($_POST['mailable_test_email_recipient']);
+        if (! is_email($to)) {
+            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Invalid email address.</p></div>';
+            return;
+        }
+
         $subject = 'Test Email from Mailable Plugin';
         $message = sprintf(
-            'This is a test email sent via %s. If you are reading this, your configuration is correct!',
-            $driver_name
+            '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2 style="color: #0073aa;">Test Email Successful!</h2>
+                <p>This is a test email sent via <strong>%s</strong>.</p>
+                <p>If you are reading this, your email configuration is working correctly!</p>
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                <p style="color: #666; font-size: 12px;">
+                    <strong>Sent:</strong> %s<br>
+                    <strong>Driver:</strong> %s<br>
+                    <strong>From:</strong> %s
+                </p>
+            </body></html>',
+            esc_html($driver_name),
+            current_time('mysql'),
+            esc_html($driver_name),
+            esc_html(get_option($this->option_from_email, get_option('admin_email')))
         );
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
+        // Capture PHPMailer errors
+        global $phpmailer;
+        $phpmailer_errors = array();
+
         try {
+            // Add error handler to capture PHPMailer errors
+            add_action('phpmailer_init', function ($phpmailer) use (&$phpmailer_errors) {
+                if (! empty($phpmailer->ErrorInfo)) {
+                    $phpmailer_errors[] = $phpmailer->ErrorInfo;
+                }
+            }, 999);
+
             $result = wp_mail($to, $subject, $message, $headers);
 
             if ($result) {
-                echo '<div class="notice notice-success is-dismissible"><p><strong>Success!</strong> Test email sent to ' . esc_html($to) . ' using ' . esc_html($driver_name) . '.</p></div>';
+                echo '<div class="notice notice-success is-dismissible">';
+                echo '<p><strong>✓ Success!</strong> Test email sent successfully!</p>';
+                echo '<ul style="margin: 10px 0 0 20px;">';
+                echo '<li><strong>Recipient:</strong> ' . esc_html($to) . '</li>';
+                echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
+                echo '<li><strong>Connection:</strong> ' . esc_html($connection_test['message']) . '</li>';
+                echo '</ul>';
+                echo '</div>';
             } else {
-                global $phpmailer;
-                echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Email failed to send.</p>';
-                if (isset($phpmailer->ErrorInfo)) {
-                    echo '<p>Debug Info: ' . esc_html($phpmailer->ErrorInfo) . '</p>';
+                echo '<div class="notice notice-error is-dismissible">';
+                echo '<p><strong>✗ Error:</strong> Email failed to send.</p>';
+
+                if (! empty($phpmailer_errors)) {
+                    echo '<p><strong>PHPMailer Errors:</strong></p><ul style="margin: 10px 0 0 20px;">';
+                    foreach ($phpmailer_errors as $error) {
+                        echo '<li>' . esc_html($error) . '</li>';
+                    }
+                    echo '</ul>';
+                } elseif (isset($phpmailer->ErrorInfo) && ! empty($phpmailer->ErrorInfo)) {
+                    echo '<p><strong>Debug Info:</strong> ' . esc_html($phpmailer->ErrorInfo) . '</p>';
+                } else {
+                    echo '<p>No specific error information available. Please check your configuration and server logs.</p>';
                 }
                 echo '</div>';
             }
         } catch (Exception $e) {
-            echo '<div class="notice notice-error is-dismissible"><p><strong>Exception:</strong> ' . esc_html($e->getMessage()) . '</p></div>';
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p><strong>Exception:</strong> ' . esc_html($e->getMessage()) . '</p>';
+            echo '<p><strong>File:</strong> ' . esc_html($e->getFile()) . ':' . esc_html($e->getLine()) . '</p>';
+            echo '</div>';
+        }
+    }
+
+    /**
+     * Handle connection test
+     *
+     * @return void
+     */
+    private function handle_connection_test()
+    {
+        $nonce_key = isset($_POST['mailable_test_connection_nonce']) ? 'mailable_test_connection_nonce' : 'mailable_test_nonce';
+        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
+            return;
+        }
+
+        if (! current_user_can('manage_options')) {
+            return;
+        }
+
+        $driver = Mail_Driver_Manager::get_active_driver();
+
+        if (! $driver) {
+            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> No active driver configured.</p></div>';
+            return;
+        }
+
+        $driver_name = $driver->get_label();
+        $test_result = $driver->test_connection();
+
+        if ($test_result['success']) {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p><strong>✓ Connection Test Passed!</strong></p>';
+            echo '<ul style="margin: 10px 0 0 20px;">';
+            echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
+            echo '<li><strong>Status:</strong> ' . esc_html($test_result['message']) . '</li>';
+            echo '</ul>';
+            echo '<p style="margin-top: 10px;">Your configuration looks good. You can now send a test email to verify end-to-end delivery.</p>';
+            echo '</div>';
+        } else {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p><strong>✗ Connection Test Failed</strong></p>';
+            echo '<ul style="margin: 10px 0 0 20px;">';
+            echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
+            echo '<li><strong>Error:</strong> ' . esc_html($test_result['message']) . '</li>';
+            echo '</ul>';
+            echo '<p style="margin-top: 10px;">Please check your configuration settings and try again.</p>';
+            echo '</div>';
         }
     }
 }

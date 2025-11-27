@@ -45,9 +45,36 @@ if ( ! defined( 'ABSPATH' ) ) {
             </tr>
         </table>
 
-        <?php if ( $active_driver ) : ?>
-            <?php require MAILABLE_PLUGIN_DIR . 'templates/driver-settings.php'; ?>
-        <?php endif; ?>
+        <!-- Driver Settings (dynamically shown based on selection) -->
+        <?php
+        $drivers = Mail_Driver_Manager::get_drivers();
+        foreach ( $drivers as $driver_name => $driver_class ) :
+            $driver = new $driver_class();
+            $is_active = ( $driver_name === $active_driver_name );
+            ?>
+            <div class="mailable-driver-settings" data-driver="<?php echo esc_attr( $driver_name ); ?>" style="<?php echo $is_active ? '' : 'display: none;'; ?>">
+                <h2><?php echo esc_html( $driver->get_label() ); ?> Configuration</h2>
+                <table class="form-table">
+                    <?php
+                    $fields = $driver->get_settings_fields();
+                    foreach ( $fields as $field ) :
+                        ?>
+                        <tr valign="top">
+                            <th scope="row">
+                                <label for="mailable_<?php echo esc_attr( $driver_name ); ?>_<?php echo esc_attr( $field['key'] ); ?>">
+                                    <?php echo esc_html( $field['label'] ); ?>
+                                </label>
+                            </th>
+                            <td>
+                                <?php $driver->render_settings_field( $field ); ?>
+                            </td>
+                        </tr>
+                        <?php
+                    endforeach;
+                    ?>
+                </table>
+            </div>
+        <?php endforeach; ?>
 
         <?php require MAILABLE_PLUGIN_DIR . 'templates/global-settings.php'; ?>
 

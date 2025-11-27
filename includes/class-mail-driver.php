@@ -73,6 +73,31 @@ abstract class Mail_Driver
     abstract public function validate_config();
 
     /**
+     * Test connection to mail service
+     *
+     * This method can be overridden by drivers to perform connection tests
+     * Default implementation just validates configuration
+     *
+     * @return array Array with 'success' (bool) and 'message' (string)
+     */
+    public function test_connection()
+    {
+        $validation = $this->validate_config();
+
+        if (is_wp_error($validation)) {
+            return array(
+                'success' => false,
+                'message' => $validation->get_error_message(),
+            );
+        }
+
+        return array(
+            'success' => true,
+            'message' => 'Configuration is valid. Ready to send emails.',
+        );
+    }
+
+    /**
      * Get option value for this driver
      *
      * @param string $key Option key

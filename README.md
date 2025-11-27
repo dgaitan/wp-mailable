@@ -5,7 +5,8 @@ A WordPress plugin that allows you to send emails using multiple mail service pr
 ## Features
 
 - **Driver-based architecture** - Easy to extend with new mail service providers
-- **Multiple providers** - Currently supports SendGrid, easily extensible for Mailgun, AWS SES, etc.
+- **Multiple providers** - Supports SendGrid, Mailpit (development), and easily extensible for Mailgun, AWS SES, etc.
+- **Development tools** - Built-in Mailpit support for local email testing
 - **Unified interface** - Same settings page for all providers
 - **Test email functionality** - Verify your configuration works
 
