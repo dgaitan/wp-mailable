@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get current tab from URL or default to 'settings'
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Tab parameter is for display only, not form processing
 $mailable_current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'settings';
 ?>
 

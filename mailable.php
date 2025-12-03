@@ -4,7 +4,7 @@
  * Plugin Name: Mailable
  * Plugin URI:  https://wordpress.org/plugins/mailable/
  * Description: A flexible WordPress email plugin with support for multiple mail service providers (SendGrid, Mailpit, and more) through a driver-based architecture.
- * Version:     2.0.0
+ * Version:     2.0.1
  * Author:      David Gaitan
  * Author URI:  https://profiles.wordpress.org/david-gaitan/
  * License:     GPL v2 or later
@@ -175,7 +175,7 @@ class Mailable
         }
 
         // Verify nonce
-        if (!wp_verify_nonce($_POST['_wpnonce'], 'mailable_settings_group-options')) {
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(wp_unslash($_POST['_wpnonce']), 'mailable_settings_group-options')) {
             return;
         }
 
@@ -194,7 +194,8 @@ class Mailable
         foreach ($fields as $field) {
             if (isset($field['required']) && $field['required']) {
                 $option_key = 'mailable_' . $active_driver_name . '_' . $field['key'];
-                $value = isset($_POST[$option_key]) ? trim(wp_unslash($_POST[$option_key])) : '';
+                $sanitize_callback = $this->get_sanitize_callback($field['type']);
+                $value = isset($_POST[$option_key]) ? call_user_func($sanitize_callback, wp_unslash($_POST[$option_key])) : '';
 
                 if (empty($value)) {
                     // translators: %1$s: Field label, %2$s: Driver label

@@ -156,7 +156,8 @@ class Mailpit_Driver extends Mail_Driver
         $port = absint($this->get_option('port', 1025));
 
         // Try to connect to the SMTP server
-        // Note: fsockopen is acceptable for network connections (not file system operations)
+        // Note: fsockopen is acceptable for network socket connections (not file system operations)
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fsockopen
         $connection = @fsockopen($host, $port, $errno, $errstr, 5);
 
         if (!$connection) {
@@ -172,6 +173,7 @@ class Mailpit_Driver extends Mail_Driver
             );
         }
 
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
         @fclose($connection);
 
         return array(
