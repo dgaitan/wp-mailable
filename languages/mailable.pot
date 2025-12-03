@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mailable 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/mailable\n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: mailable.php:145
+msgid "Mailable Settings"
+msgstr ""
+
+#: mailable.php:146
+msgid "Mailable"
+msgstr ""
+
+#: mailable.php:216
+#, php-format
+msgid "%s is required for %s."
+msgstr ""
+
+#: mailable.php:383
+msgid "Error:"
+msgstr ""
+
+#: mailable.php:383
+msgid "No active driver configured."
+msgstr ""
+
+#: mailable.php:392
+msgid "Configuration Issue:"
+msgstr ""
+
+#: mailable.php:392
+msgid "Please check your settings before sending a test email."
+msgstr ""
+
+#: mailable.php:398
+msgid "Invalid email address."
+msgstr ""
+
+#: mailable.php:402
+msgid "Test Email from Mailable Plugin"
+msgstr ""
+
+#: mailable.php:415
+msgid "Test Email Successful!"
+msgstr ""
+
+#: mailable.php:416
+msgid "This is a test email sent via"
+msgstr ""
+
+#: mailable.php:418
+msgid "If you are reading this, your email configuration is working correctly!"
+msgstr ""
+
+#: mailable.php:419
+msgid "Sent:"
+msgstr ""
+
+#: mailable.php:421
+msgid "Driver:"
+msgstr ""
+
+#: mailable.php:423
+msgid "From:"
+msgstr ""
+
+#: mailable.php:444
+msgid "Success!"
+msgstr ""
+
+#: mailable.php:444
+msgid "Test email sent successfully!"
+msgstr ""
+
+#: mailable.php:446
+msgid "Recipient:"
+msgstr ""
+
+#: mailable.php:447
+msgid "Connection:"
+msgstr ""
+
+#: mailable.php:453
+msgid "Email failed to send."
+msgstr ""
+
+#: mailable.php:456
+msgid "PHPMailer Errors:"
+msgstr ""
+
+#: mailable.php:462
+msgid "Debug Info:"
+msgstr ""
+
+#: mailable.php:464
+msgid "No specific error information available. Please check your configuration and server logs."
+msgstr ""
+
+#: mailable.php:470
+msgid "Exception:"
+msgstr ""
+
+#: mailable.php:471
+msgid "File:"
+msgstr ""
+
+#: mailable.php:495
+msgid "Connection Test Passed!"
+msgstr ""
+
+#: mailable.php:506
+msgid "Status:"
+msgstr ""
+
+#: mailable.php:509
+msgid "Your configuration looks good. You can now send a test email to verify end-to-end delivery."
+msgstr ""
+
+#: mailable.php:513
+msgid "Connection Test Failed"
+msgstr ""
+
+#: mailable.php:516
+msgid "Please check your configuration settings and try again."
+msgstr ""
+
+#: templates/global-settings.php:24
+msgid "Global Settings"
+msgstr ""
+
+#: templates/global-settings.php:29
+msgid "From Email"
+msgstr ""
+
+#: templates/global-settings.php:36
+msgid "Global \"From\" email address (optional). Can be overridden by driver settings."
+msgstr ""
+
+#: templates/global-settings.php:40
+msgid "From Name"
+msgstr ""
+
+#: templates/global-settings.php:47
+msgid "Global \"From\" name (optional). Can be overridden by driver settings."
+msgstr ""
+
+#: templates/global-settings.php:55
+msgid "Force \"From\" Settings"
+msgstr ""
+
+#: templates/global-settings.php:64
+msgid "Recommended. Prevents other plugins from setting their own \"From\" headers."
+msgstr ""
+
+#: templates/test-email.php:18
+msgid "Step 1:"
+msgstr ""
+
+#: templates/test-email.php:18
+msgid "Test your connection to verify configuration"
+msgstr ""
+
+#: templates/test-email.php:19
+msgid "Step 2:"
+msgstr ""
+
+#: templates/test-email.php:19
+msgid "Send a test email to verify end-to-end delivery"
+msgstr ""
+
+#: templates/test-email.php:29
+msgid "Connection Test"
+msgstr ""
+
+#: templates/test-email.php:32
+msgid "Verify that your email service provider configuration is correct."
+msgstr ""
+
+#: templates/test-email.php:39
+msgid "Test Connection"
+msgstr ""
+
+#: templates/test-email.php:41
+msgid "This will validate your configuration without sending an email."
+msgstr ""
+
+#: templates/test-email.php:52
+msgid "Send Test Email"
+msgstr ""
+
+#: templates/test-email.php:55
+msgid "Send an actual test email to verify end-to-end delivery."
+msgstr ""
+
+#: templates/test-email.php:59
+msgid "Send To"
+msgstr ""
+
+#: templates/test-email.php:67
+msgid "Enter the email address where you want to receive the test email."
+msgstr ""
+
+#: templates/settings-page.php:30
+msgid "Flexible WordPress Email Delivery"
+msgstr ""
+
+#: templates/settings-page.php:42
+msgid "Settings"
+msgstr ""
+
+#: templates/settings-page.php:43
+msgid "Configure email provider"
+msgstr ""
+
+#: templates/settings-page.php:54
+msgid "Test Email"
+msgstr ""
+
+#: templates/settings-page.php:55
+msgid "Test connection & send"
+msgstr ""
+
+#: templates/settings-page.php:72
+msgid "Mail Service Provider"
+msgstr ""
+
+#: templates/settings-page.php:89
+msgid "Select Provider"
+msgstr ""
+
+#: templates/settings-page.php:97
+msgid "Choose your email service provider. Each provider has different configuration requirements."
+msgstr ""
+
+#: templates/settings-page.php:114
+msgid "Configuration"
+msgstr ""
+
+#: templates/settings-page.php:145
+msgid "Save Changes"
+msgstr ""
+

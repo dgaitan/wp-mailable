@@ -2,11 +2,19 @@
 
 /**
  * Plugin Name: Mailable
- * Plugin URI:  https://mailable.com/
- * Description: A plugin that allows you to send emails using multiple mail service providers (SendGrid, Mailgun, etc.)
+ * Plugin URI:  https://wordpress.org/plugins/mailable/
+ * Description: A flexible WordPress email plugin with support for multiple mail service providers (SendGrid, Mailpit, and more) through a driver-based architecture.
  * Version:     2.0.0
  * Author:      David Gaitan
- * License:     GPL2
+ * Author URI:  https://profiles.wordpress.org/david-gaitan/
+ * License:     GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: mailable
+ * Domain Path: /languages
+ * Requires at least: 6.0
+ * Tested up to: 6.4
+ * Requires PHP: 7.4
+ * Network: false
  */
 
 // Prevent direct access to the file
@@ -64,6 +72,23 @@ class Mailable
 
         // Enqueue admin scripts
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+
+        // Load plugin text domain
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
+    }
+
+    /**
+     * Load plugin text domain for translations
+     *
+     * @return void
+     */
+    public function load_textdomain()
+    {
+        load_plugin_textdomain(
+            'mailable',
+            false,
+            dirname(plugin_basename(__FILE__)) . '/languages'
+        );
     }
 
     /**
@@ -117,8 +142,8 @@ class Mailable
     public function add_admin_menu()
     {
         add_options_page(
-            'Mailable Settings',
-            'Mailable',
+            __('Mailable Settings', 'mailable'),
+            __('Mailable', 'mailable'),
             'manage_options',
             'mailable-settings',
             array($this, 'settings_page_html')
@@ -188,7 +213,7 @@ class Mailable
                     add_settings_error(
                         $option_key,
                         'required_field',
-                        sprintf('%s is required for %s.', $field['label'], $driver->get_label())
+                        sprintf(__('%s is required for %s.', 'mailable'), $field['label'], $driver->get_label())
                     );
                 }
             }
@@ -355,7 +380,7 @@ class Mailable
         $driver = Mail_Driver_Manager::get_active_driver();
 
         if (! $driver) {
-            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> No active driver configured.</p></div>';
+            echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html__('No active driver configured.', 'mailable') . '</p></div>';
             return;
         }
 
@@ -364,32 +389,38 @@ class Mailable
         // Test connection first
         $connection_test = $driver->test_connection();
         if (! $connection_test['success']) {
-            echo '<div class="notice notice-warning is-dismissible"><p><strong>Configuration Issue:</strong> ' . esc_html($connection_test['message']) . '</p><p>Please check your settings before sending a test email.</p></div>';
+            echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__('Configuration Issue:', 'mailable') . '</strong> ' . esc_html($connection_test['message']) . '</p><p>' . esc_html__('Please check your settings before sending a test email.', 'mailable') . '</p></div>';
             return;
         }
 
         $to      = sanitize_email($_POST['mailable_test_email_recipient']);
         if (! is_email($to)) {
-            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Invalid email address.</p></div>';
+            echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html__('Invalid email address.', 'mailable') . '</p></div>';
             return;
         }
 
-        $subject = 'Test Email from Mailable Plugin';
+        $subject = __('Test Email from Mailable Plugin', 'mailable');
         $message = sprintf(
             '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <h2 style="color: #0073aa;">Test Email Successful!</h2>
-                <p>This is a test email sent via <strong>%s</strong>.</p>
-                <p>If you are reading this, your email configuration is working correctly!</p>
+                <h2 style="color: #0073aa;">%s</h2>
+                <p>%s <strong>%s</strong>.</p>
+                <p>%s</p>
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
                 <p style="color: #666; font-size: 12px;">
-                    <strong>Sent:</strong> %s<br>
-                    <strong>Driver:</strong> %s<br>
-                    <strong>From:</strong> %s
+                    <strong>%s</strong> %s<br>
+                    <strong>%s</strong> %s<br>
+                    <strong>%s</strong> %s
                 </p>
             </body></html>',
+            esc_html__('Test Email Successful!', 'mailable'),
+            esc_html__('This is a test email sent via', 'mailable'),
             esc_html($driver_name),
+            esc_html__('If you are reading this, your email configuration is working correctly!', 'mailable'),
+            esc_html__('Sent:', 'mailable'),
             current_time('mysql'),
+            esc_html__('Driver:', 'mailable'),
             esc_html($driver_name),
+            esc_html__('From:', 'mailable'),
             esc_html(get_option($this->option_from_email, get_option('admin_email')))
         );
         $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -410,34 +441,34 @@ class Mailable
 
             if ($result) {
                 echo '<div class="notice notice-success is-dismissible">';
-                echo '<p><strong>✓ Success!</strong> Test email sent successfully!</p>';
+                echo '<p><strong>✓ ' . esc_html__('Success!', 'mailable') . '</strong> ' . esc_html__('Test email sent successfully!', 'mailable') . '</p>';
                 echo '<ul style="margin: 10px 0 0 20px;">';
-                echo '<li><strong>Recipient:</strong> ' . esc_html($to) . '</li>';
-                echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
-                echo '<li><strong>Connection:</strong> ' . esc_html($connection_test['message']) . '</li>';
+                echo '<li><strong>' . esc_html__('Recipient:', 'mailable') . '</strong> ' . esc_html($to) . '</li>';
+                echo '<li><strong>' . esc_html__('Driver:', 'mailable') . '</strong> ' . esc_html($driver_name) . '</li>';
+                echo '<li><strong>' . esc_html__('Connection:', 'mailable') . '</strong> ' . esc_html($connection_test['message']) . '</li>';
                 echo '</ul>';
                 echo '</div>';
             } else {
                 echo '<div class="notice notice-error is-dismissible">';
-                echo '<p><strong>✗ Error:</strong> Email failed to send.</p>';
+                echo '<p><strong>✗ ' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html__('Email failed to send.', 'mailable') . '</p>';
 
                 if (! empty($phpmailer_errors)) {
-                    echo '<p><strong>PHPMailer Errors:</strong></p><ul style="margin: 10px 0 0 20px;">';
+                    echo '<p><strong>' . esc_html__('PHPMailer Errors:', 'mailable') . '</strong></p><ul style="margin: 10px 0 0 20px;">';
                     foreach ($phpmailer_errors as $error) {
                         echo '<li>' . esc_html($error) . '</li>';
                     }
                     echo '</ul>';
                 } elseif (isset($phpmailer->ErrorInfo) && ! empty($phpmailer->ErrorInfo)) {
-                    echo '<p><strong>Debug Info:</strong> ' . esc_html($phpmailer->ErrorInfo) . '</p>';
+                    echo '<p><strong>' . esc_html__('Debug Info:', 'mailable') . '</strong> ' . esc_html($phpmailer->ErrorInfo) . '</p>';
                 } else {
-                    echo '<p>No specific error information available. Please check your configuration and server logs.</p>';
+                    echo '<p>' . esc_html__('No specific error information available. Please check your configuration and server logs.', 'mailable') . '</p>';
                 }
                 echo '</div>';
             }
         } catch (Exception $e) {
             echo '<div class="notice notice-error is-dismissible">';
-            echo '<p><strong>Exception:</strong> ' . esc_html($e->getMessage()) . '</p>';
-            echo '<p><strong>File:</strong> ' . esc_html($e->getFile()) . ':' . esc_html($e->getLine()) . '</p>';
+            echo '<p><strong>' . esc_html__('Exception:', 'mailable') . '</strong> ' . esc_html($e->getMessage()) . '</p>';
+            echo '<p><strong>' . esc_html__('File:', 'mailable') . '</strong> ' . esc_html($e->getFile()) . ':' . esc_html($e->getLine()) . '</p>';
             echo '</div>';
         }
     }
@@ -461,7 +492,7 @@ class Mailable
         $driver = Mail_Driver_Manager::get_active_driver();
 
         if (! $driver) {
-            echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> No active driver configured.</p></div>';
+            echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html__('No active driver configured.', 'mailable') . '</p></div>';
             return;
         }
 
@@ -470,21 +501,21 @@ class Mailable
 
         if ($test_result['success']) {
             echo '<div class="notice notice-success is-dismissible">';
-            echo '<p><strong>✓ Connection Test Passed!</strong></p>';
+            echo '<p><strong>✓ ' . esc_html__('Connection Test Passed!', 'mailable') . '</strong></p>';
             echo '<ul style="margin: 10px 0 0 20px;">';
-            echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
-            echo '<li><strong>Status:</strong> ' . esc_html($test_result['message']) . '</li>';
+            echo '<li><strong>' . esc_html__('Driver:', 'mailable') . '</strong> ' . esc_html($driver_name) . '</li>';
+            echo '<li><strong>' . esc_html__('Status:', 'mailable') . '</strong> ' . esc_html($test_result['message']) . '</li>';
             echo '</ul>';
-            echo '<p style="margin-top: 10px;">Your configuration looks good. You can now send a test email to verify end-to-end delivery.</p>';
+            echo '<p style="margin-top: 10px;">' . esc_html__('Your configuration looks good. You can now send a test email to verify end-to-end delivery.', 'mailable') . '</p>';
             echo '</div>';
         } else {
             echo '<div class="notice notice-error is-dismissible">';
-            echo '<p><strong>✗ Connection Test Failed</strong></p>';
+            echo '<p><strong>✗ ' . esc_html__('Connection Test Failed', 'mailable') . '</strong></p>';
             echo '<ul style="margin: 10px 0 0 20px;">';
-            echo '<li><strong>Driver:</strong> ' . esc_html($driver_name) . '</li>';
-            echo '<li><strong>Error:</strong> ' . esc_html($test_result['message']) . '</li>';
+            echo '<li><strong>' . esc_html__('Driver:', 'mailable') . '</strong> ' . esc_html($driver_name) . '</li>';
+            echo '<li><strong>' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html($test_result['message']) . '</li>';
             echo '</ul>';
-            echo '<p style="margin-top: 10px;">Please check your configuration settings and try again.</p>';
+            echo '<p style="margin-top: 10px;">' . esc_html__('Please check your configuration settings and try again.', 'mailable') . '</p>';
             echo '</div>';
         }
     }
