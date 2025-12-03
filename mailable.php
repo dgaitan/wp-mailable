@@ -12,9 +12,8 @@
  * Text Domain: mailable
  * Domain Path: /languages
  * Requires at least: 6.0
- * Tested up to: 6.4
+ * Tested up to: 6.9
  * Requires PHP: 7.4
- * Network: false
  */
 
 // Prevent direct access to the file
@@ -72,23 +71,6 @@ class Mailable
 
         // Enqueue admin scripts
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
-
-        // Load plugin text domain
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
-    }
-
-    /**
-     * Load plugin text domain for translations
-     *
-     * @return void
-     */
-    public function load_textdomain()
-    {
-        load_plugin_textdomain(
-            'mailable',
-            false,
-            dirname(plugin_basename(__FILE__)) . '/languages'
-        );
     }
 
     /**
@@ -158,10 +140,10 @@ class Mailable
     public function register_settings()
     {
         // Register main settings
-        register_setting('mailable_settings_group', $this->option_active_driver);
+        register_setting('mailable_settings_group', $this->option_active_driver, 'sanitize_text_field');
         register_setting('mailable_settings_group', $this->option_from_email, 'sanitize_email');
         register_setting('mailable_settings_group', $this->option_from_name, 'sanitize_text_field');
-        register_setting('mailable_settings_group', $this->option_force_from);
+        register_setting('mailable_settings_group', $this->option_force_from, 'absint');
 
         // Register settings for each driver (no validation - we'll validate on save)
         $drivers = Mail_Driver_Manager::get_drivers();
