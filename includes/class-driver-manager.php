@@ -13,6 +13,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 class Mail_Driver_Manager
 {
 

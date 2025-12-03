@@ -14,6 +14,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 class Mailpit_Driver extends Mail_Driver
 {
 
@@ -155,6 +156,7 @@ class Mailpit_Driver extends Mail_Driver
         $port = absint($this->get_option('port', 1025));
 
         // Try to connect to the SMTP server
+        // Note: fsockopen is acceptable for network connections (not file system operations)
         $connection = @fsockopen($host, $port, $errno, $errstr, 5);
 
         if (!$connection) {
@@ -170,7 +172,7 @@ class Mailpit_Driver extends Mail_Driver
             );
         }
 
-        fclose($connection);
+        @fclose($connection);
 
         return array(
             'success' => true,

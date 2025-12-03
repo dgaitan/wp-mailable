@@ -1,6 +1,6 @@
 === Mailable ===
 Contributors: davidgaitan
-Tags: email, smtp, sendgrid, mailpit, mailgun, transactional email, email delivery, wp-mail
+Tags: email, smtp, sendgrid, mailpit, transactional email, email delivery
 Requires at least: 6.0
 Tested up to: 6.9
 Stable tag: 2.0.0

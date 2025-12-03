@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$active_driver = Mail_Driver_Manager::get_active_driver();
-$driver_label = $active_driver ? $active_driver->get_label() : 'No Provider';
+$mailable_active_driver = Mail_Driver_Manager::get_active_driver();
+$mailable_driver_label = $mailable_active_driver ? $mailable_active_driver->get_label() : 'No Provider';
 ?>
 
 <div class="mailable-info-box">

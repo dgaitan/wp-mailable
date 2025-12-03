@@ -11,6 +11,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 class SendGrid_Driver extends Mail_Driver
 {
 

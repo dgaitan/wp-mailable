@@ -170,12 +170,17 @@ class Mailable
     public function validate_active_driver_settings()
     {
         // Only validate on our settings page
-        if (!isset($_POST['option_page']) || $_POST['option_page'] !== 'mailable_settings_group') {
+        if (!isset($_POST['option_page']) || !isset($_POST['_wpnonce']) || $_POST['option_page'] !== 'mailable_settings_group') {
+            return;
+        }
+
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['_wpnonce'], 'mailable_settings_group-options')) {
             return;
         }
 
         $active_driver_name = isset($_POST['mailable_active_driver'])
-            ? sanitize_text_field($_POST['mailable_active_driver'])
+            ? sanitize_text_field(wp_unslash($_POST['mailable_active_driver']))
             : get_option('mailable_active_driver', 'sendgrid');
 
         $driver = Mail_Driver_Manager::get_driver($active_driver_name);
@@ -189,13 +194,14 @@ class Mailable
         foreach ($fields as $field) {
             if (isset($field['required']) && $field['required']) {
                 $option_key = 'mailable_' . $active_driver_name . '_' . $field['key'];
-                $value = isset($_POST[$option_key]) ? trim($_POST[$option_key]) : '';
+                $value = isset($_POST[$option_key]) ? trim(wp_unslash($_POST[$option_key])) : '';
 
                 if (empty($value)) {
+                    // translators: %1$s: Field label, %2$s: Driver label
                     add_settings_error(
                         $option_key,
                         'required_field',
-                        sprintf(__('%s is required for %s.', 'mailable'), $field['label'], $driver->get_label())
+                        sprintf(__('%1$s is required for %2$s.', 'mailable'), $field['label'], $driver->get_label())
                     );
                 }
             }
@@ -339,7 +345,7 @@ class Mailable
         // Handle connection test
         if (isset($_POST['mailable_test_connection'])) {
             $nonce_key = isset($_POST['mailable_test_connection_nonce']) ? 'mailable_test_connection_nonce' : 'mailable_test_nonce';
-            if (isset($_POST[$nonce_key]) && wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
+            if (isset($_POST[$nonce_key]) && wp_verify_nonce(wp_unslash($_POST[$nonce_key]), 'mailable_send_test_email')) {
                 $this->handle_connection_test();
             }
             return;
@@ -351,7 +357,7 @@ class Mailable
         }
 
         $nonce_key = isset($_POST['mailable_test_email_nonce']) ? 'mailable_test_email_nonce' : 'mailable_test_nonce';
-        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
+        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce(wp_unslash($_POST[$nonce_key]), 'mailable_send_test_email')) {
             return;
         }
 
@@ -375,8 +381,8 @@ class Mailable
             return;
         }
 
-        $to      = sanitize_email($_POST['mailable_test_email_recipient']);
-        if (! is_email($to)) {
+        $to = isset($_POST['mailable_test_email_recipient']) ? sanitize_email(wp_unslash($_POST['mailable_test_email_recipient'])) : '';
+        if (empty($to) || ! is_email($to)) {
             echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('Error:', 'mailable') . '</strong> ' . esc_html__('Invalid email address.', 'mailable') . '</p></div>';
             return;
         }
@@ -463,7 +469,7 @@ class Mailable
     private function handle_connection_test()
     {
         $nonce_key = isset($_POST['mailable_test_connection_nonce']) ? 'mailable_test_connection_nonce' : 'mailable_test_nonce';
-        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce($_POST[$nonce_key], 'mailable_send_test_email')) {
+        if (! isset($_POST[$nonce_key]) || ! wp_verify_nonce(wp_unslash($_POST[$nonce_key]), 'mailable_send_test_email')) {
             return;
         }
 
