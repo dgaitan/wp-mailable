@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Mailable
  * Plugin URI:  https://wordpress.org/plugins/mailable/
- * Description: A flexible WordPress email plugin with support for multiple mail service providers (SendGrid, Mailpit, and more) through a driver-based architecture.
+ * Description: A flexible WordPress email plugin with support for multiple mail service providers (SendGrid, SMTP.com, Mailpit, and more) through a driver-based architecture.
  * Version:     2.0.1
  * Author:      David Gaitan
  * Author URI:  https://profiles.wordpress.org/david-gaitan/
@@ -33,6 +33,7 @@ require_once MAILABLE_PLUGIN_DIR . 'includes/class-driver-manager.php';
 // Load drivers
 require_once MAILABLE_PLUGIN_DIR . 'includes/drivers/class-sendgrid-driver.php';
 require_once MAILABLE_PLUGIN_DIR . 'includes/drivers/class-mailpit-driver.php';
+require_once MAILABLE_PLUGIN_DIR . 'includes/drivers/class-smtpcom-driver.php';
 
 /**
  * Main Mailable Plugin Class
@@ -111,6 +112,7 @@ class Mailable
     {
         Mail_Driver_Manager::register('sendgrid', 'SendGrid_Driver');
         Mail_Driver_Manager::register('mailpit', 'Mailpit_Driver');
+        Mail_Driver_Manager::register('smtpcom', 'SMTPcom_Driver');
 
         // Allow other plugins to register drivers
         do_action('mailable_register_drivers');

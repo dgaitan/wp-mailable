@@ -126,7 +126,7 @@ $mailable_current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash(
                                 </label>
                                 <?php $mailable_driver->render_settings_field( $mailable_field ); ?>
                                 <?php if ( isset( $mailable_field['description'] ) ) : ?>
-                                    <p class="mailable-form-description"><?php echo esc_html( $mailable_field['description'] ); ?></p>
+                                    <p class="mailable-form-description"><?php echo wp_kses_post( $mailable_field['description'] ); ?></p>
                                 <?php endif; ?>
                             </div>
                             <?php
