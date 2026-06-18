@@ -1,0 +1,33 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build output
+/build/
+/dist/
+
+# Package managers
+composer.lock
+package-lock.json
+yarn.lock
+
+# Environment / secrets
+.env
+.env.*
+
+# IDE / editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# PHP
+*.log
+
+# WordPress
+wp-content/uploads/
+debug.log
